@@ -34,7 +34,8 @@ int main(int argc, char **argv)
     int iteration, initialIteration;
 
     // Delta x and y squared
-    double deltaX2, deltaY2;
+    double deltaX2 = DX * DX;
+    double deltaY2 = DY * DY;
 
     // Time stamps
     double startTimeStamp;
@@ -49,7 +50,7 @@ int main(int argc, char **argv)
     initialIteration++;
 
     // Calculate the largest stable time step
-    // ToDo 
+    timeStep = (deltaY2 * deltaX2) / (2 * DIFFUSION_CONSTANT * (deltaX2 + deltaY2));
 
     // Get the start time stamp
     startTimeStamp = MPI_Wtime();
