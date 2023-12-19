@@ -4,9 +4,12 @@ build/
 # output files
 *.o
 .dat
+img/*.png
 
 # system files
 .DS_STORE
+.vscode
+.DAT
 
 # Prerequisites
 *.d

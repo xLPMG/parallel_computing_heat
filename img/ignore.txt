@@ -1,0 +1,1 @@
+this file exists so that the img folder doesn't get deleted.
