@@ -34,4 +34,4 @@ mpic++ -O3 -Wall -o build/heat_mpi build/main.o build/pngsaver.o build/heat_init
 mpirun --oversubscribe -n 4 build/heat_mpi
 
 # Clean up object files after the run
-rm -f *.o
+rm -f build/*.o

@@ -1,6 +1,12 @@
 # build files
 build/
+
+# output files
 *.o
+.dat
+
+# system files
+.DS_STORE
 
 # Prerequisites
 *.d

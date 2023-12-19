@@ -37,7 +37,7 @@ void write_field_to_file(Field *temperature, int iter, ParallelData *parallel) {
         }
 
         // Store the data to a PNG file
-        sprintf(filename, "%s_%04d.png", "heat", iter);
+        sprintf(filename, "%s_%04d.png", "img/heat", iter);
         savePngImage(full_data, height, width, filename, 'c');
         delete[] full_data;
     } else {
