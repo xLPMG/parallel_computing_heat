@@ -9,7 +9,7 @@ img/*.png
 # system files
 .DS_STORE
 .vscode
-.DAT
+*.DAT
 
 # Prerequisites
 *.d

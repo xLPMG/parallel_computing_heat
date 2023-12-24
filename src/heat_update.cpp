@@ -3,8 +3,9 @@
 
 // Include header files if necessary
 
-void start_halo_exchange(Field *temperature, ParallelData *parallel) {
-    
+void start_halo_exchange(Field *temperature, ParallelData *parallel)
+{
+
     // This function should initiate the halo exchange to communicate boundary data between neighboring processes.
 
     // Width for accessing and navigating through the temperature field
@@ -27,73 +28,132 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel) {
     // This exchanges the ghost cells in the rightmost column of the local temperature field
 }
 
-void complete_halo_exchange(ParallelData *parallel) {
+void complete_halo_exchange(ParallelData *parallel)
+{
     // Wait for the completion of non-blocking communication requests related to halo exchange
 }
 
-void update_interior_temperature(Field *curr, Field *prev, double a, double dt) {
+/**
+ * @brief Updates the interior temperature field.
+ *
+ * This function should update the interior temperature field based on the five-point stencil.
+ *
+ * @param curr Pointer to the current field structure.
+ * @param prev Pointer to the previous field structure.
+ * @param a Thermal diffusivity.
+ * @param dt Time step size.
+ */
+void update_interior_temperature(Field *curr, Field *prev, double a, double dt)
+{
+    int i, j;
+    int ic, iu, id, il, ir; // Indices for center, up, down, left, right
+    int width;
+    width = curr->ny + 2;
+    double dx2, dy2;
 
-    // This function should update the interior temperature field based on the five-point stencil.
-
-    // Indices for center, up, down, left, right
-    // These indices are used for accessing neighboring grid points during the update.
-
-    // Width of the grid (number of columns)
-    // The width is used to calculate the indices and navigate through the temperature field.
-
-    // Parameters for the update
-    // a: Thermal diffusivity
-    // dt: Time step size
-
-    // Determine the temperature field at the next time step
-    // As fixed boundary conditions are applied, the outermost grid points are not updated.
+    //  Determine the temperature field at the next time step. 
+    //  As fixed boundary conditions are applied, the outermost grid points are not updated.
+    dx2 = prev->dx * prev->dx; 
+    dy2 = prev->dy * prev->dy;
 
     // Loop over the interior grid points for the update
-    // Update the temperature using the five-point stencil
+    for (i = 1; i < curr->nx + 1; i++)
+    {
+        for (j = 1; j < curr->ny + 1; j++)
+        {
+            ic = idx(i, j, width);
+            iu = idx(i + 1, j, width);
+            id = idx(i - 1, j, width);
+            ir = idx(i, j + 1, width);
+            il = idx(i, j - 1, width);
+
+            // Update the temperature using the five-point stencil
+
+            // TODO
+        }
+    }
 }
 
-void update_boundary_temperature(Field *curr, Field *prev, double a, double dt) {
-  int i, j;
-  int ic, iu, id, il, ir; // Indices for center, up, down, left, right
-  int width;
-  width = curr->ny + 2;
-  double dx2, dy2;
+/**
+ * @brief Update the borders of the temperature field.
+ *
+ * This function should update the border temperature field based on the five-point stencil.
+ *
+ * @param curr Pointer to the current field structure.
+ * @param prev Pointer to the previous field structure.
+ * @param a Thermal diffusivity.
+ * @param dt Time step size.
+ */
+void update_boundary_temperature(Field *curr, Field *prev, double a, double dt)
+{
+    int i, j;
+    int ic, iu, id, il, ir; // Indices for center, up, down, left, right
+    int width;
+    width = curr->ny + 2;
+    double dx2, dy2;
 
-  dx2 = prev->dx * prev->dx; // Determine the temperature field at the next time step. As fixed boundary conditions are applied, the outermost grid points are not updated.
-  dy2 = prev->dy * prev->dy;
+    //  Determine the temperature field at the next time step. 
+    //  As fixed boundary conditions are applied, the outermost grid points are not updated.
+    dx2 = prev->dx * prev->dx;
+    dy2 = prev->dy * prev->dy;
 
-  // Update the left and right borders
-  i = 1;
-  for (j = 1; j < curr->ny + 1; j++) {
-      ic = idx(i, j, width);
-      iu = idx(i + 1, j, width);
-      id = idx(i - 1, j, width);
-      ir = idx(i, j + 1, width);
-      il = idx(i, j - 1, width);
+    // Update the left border
+    i = 1;
+    for (j = 1; j < curr->ny + 1; j++)
+    {
+        ic = idx(i, j, width);
+        iu = idx(i + 1, j, width);
+        id = idx(i - 1, j, width);
+        ir = idx(i, j + 1, width);
+        il = idx(i, j - 1, width);
 
-      // Apply the five-point stencil to update the temperature at the left and right borders.
-  }
+        // Apply the five-point stencil to update the temperature at the left and right borders.
 
-  i = curr->nx;
-  for (j = 1; j < curr->ny + 1; j++) {
-      // Update indicies using idx
-      
-      // Apply the five-point stencil to update the temperature at the left and right borders.
-  }
+        // TODO
+    }
 
-  // Update the upper and lower borders
-  j = 1;
-  for (i = 1; i < curr->nx + 1; i++) {
-      // Update indicies using idx
+    // Update the right border
+    i = curr->nx;
+    for (j = 1; j < curr->ny + 1; j++)
+    {
+        ic = idx(i, j, width);
+        iu = idx(i + 1, j, width);
+        id = idx(i - 1, j, width);
+        ir = idx(i, j + 1, width);
+        il = idx(i, j - 1, width);
 
-      // Apply the five-point stencil to update the temperature at the upper and lower borders.
-  }
+        // Apply the five-point stencil to update the temperature at the left and right borders.
 
-  // Update the lower and upper borders
-  j = curr->ny;
-  for (i = 1; i < curr->nx + 1; i++) {
-      // Update indicies using idx
+        // TODO
+    }
 
-      // Apply the five-point stencil to update the temperature at the upper and lower borders.
-  }
+    // Update the lower border
+    j = 1;
+    for (i = 1; i < curr->nx + 1; i++)
+    {
+        ic = idx(i, j, width);
+        iu = idx(i + 1, j, width);
+        id = idx(i - 1, j, width);
+        ir = idx(i, j + 1, width);
+        il = idx(i, j - 1, width);
+
+        // Apply the five-point stencil to update the temperature at the upper and lower borders.
+
+        // TODO
+    }
+
+    // Update the upper border
+    j = curr->ny;
+    for (i = 1; i < curr->nx + 1; i++)
+    {
+        ic = idx(i, j, width);
+        iu = idx(i + 1, j, width);
+        id = idx(i - 1, j, width);
+        ir = idx(i, j + 1, width);
+        il = idx(i, j - 1, width);
+
+        // Apply the five-point stencil to update the temperature at the upper and lower borders.
+
+        // TODO
+    }
 }
