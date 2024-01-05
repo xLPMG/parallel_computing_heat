@@ -30,7 +30,9 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
 
 void complete_halo_exchange(ParallelData *parallel)
 {
+    MPI_Status status[8];
     // Wait for the completion of non-blocking communication requests related to halo exchange
+    MPI_Waitall(8, parallel->requests, status);
 }
 
 /**
