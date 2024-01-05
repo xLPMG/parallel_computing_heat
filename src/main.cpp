@@ -20,6 +20,7 @@
  */
 int main(int argc, char **argv)
 {
+    int dims[2], coords[2], periods[2];
     // Current and previous temperature fields
     Field currentField, previousField;
 
@@ -45,6 +46,9 @@ int main(int argc, char **argv)
 
     init_simulation(argc, argv, &currentField, &previousField, &numTimeSteps, &parallelInfo, &initialIteration);
 
+    //Brauchen coords um Boundary richtig zuaktualisieren
+    MPI_Cart_get(parallel->comm, 2, dims, periods, coords);
+    
     // Output the initial field
     write_field_to_file(&currentField, initialIteration, &parallelInfo);
     initialIteration++;
