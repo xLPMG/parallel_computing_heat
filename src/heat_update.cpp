@@ -5,16 +5,29 @@
 
 void start_halo_exchange(Field *temperature, ParallelData *parallel)
 {
-
+    
     // This function should initiate the halo exchange to communicate boundary data between neighboring processes.
+
+    //Buffer Arrays
+    double send_buffer_up[temperature->nx], send_buffer_down[temperature->nx], send_buffer_left[temperature->ny], send_buffer_right[temperature->nx];
+    double recv_buffer_up[temperature->nx], recv_buffer_down[temperature->nx], recv_buffer_left[temperature->ny], recv_buffer_right[temperature->nx];
+
+    //Zaehlvariablen, um ueber die Daten zu laufen
+    int i,j;
 
     // Width for accessing and navigating through the temperature field
     int width = temperature->ny + 2;
 
     // (up <-> down)
+    i = 1;
+    for( j = 1, j <= temperature->ny, j++){
+        send_buffer_up[j - 1] = temperature->data[idx(i,j,width)];
+    }
     // Communication 1: Send data to the upper neighbor and receive from the lower neighbor
+    MPI_Isend(send_buffer_up, temperature->nx, MPI_DOUBLE, parallel->nup, ROW_TAG_UP, parallel->comm, &(parallel->requests[0]));
     // This exchanges the ghost cells in the top row of the local temperature field
-
+    MPI_Irecv(recv_buffer_down, temperature->nx, MPI_DOUBLE, parallel->ndown, ROW_TAG_UP,parallel->comm, MPI_NULL, &(parallel->requests[1]));
+    
     // (down <-> up)
     // Communication 2: Send data to the lower neighbor and receive from the upper neighbor
     // This exchanges the ghost cells in the bottom row of the local temperature field
@@ -30,9 +43,8 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
 
 void complete_halo_exchange(ParallelData *parallel)
 {
-    MPI_Status status[8];
     // Wait for the completion of non-blocking communication requests related to halo exchange
-    MPI_Waitall(8, parallel->requests, status);
+    MPI_Waitall(8, parallel->requests, MPI_NULL);
 }
 
 /**
