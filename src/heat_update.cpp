@@ -15,8 +15,8 @@
 void start_halo_exchange(Field *temperature, ParallelData *parallel)
 {
     // Buffer Arrays
-    double send_buffer_up[temperature->nx], send_buffer_down[temperature->nx], send_buffer_left[temperature->ny], send_buffer_right[temperature->nx];
-    double recv_buffer_up[temperature->nx], recv_buffer_down[temperature->nx], recv_buffer_left[temperature->ny], recv_buffer_right[temperature->nx];
+    double send_buffer_up[temperature->nx], send_buffer_down[temperature->nx], send_buffer_left[temperature->ny], send_buffer_right[temperature->ny];
+    double recv_buffer_up[temperature->nx], recv_buffer_down[temperature->nx], recv_buffer_left[temperature->ny], recv_buffer_right[temperature->ny];
 
     // Zaehlvariablen, um ueber die Daten zu laufen
     int i, j;
@@ -74,7 +74,7 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
  */
 void complete_halo_exchange(ParallelData *parallel)
 {
-    MPI_Status recv_status[parallel->size - 1];
+    MPI_Status recv_status[8];
 
     // Wait for the completion of non-blocking communication requests related to halo exchange
     MPI_Waitall(8, parallel->requests, recv_status);

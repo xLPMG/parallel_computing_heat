@@ -59,7 +59,14 @@ int main(int argc, char **argv)
     for (iteration = initialIteration; iteration < initialIteration + numTimeSteps; iteration++) {
         // ToDo
         // Use your implemented functions in a correct order here.
-        
+        std::cout << "upate boundary" << std::endl;
+        update_boundary_temperature(&currentField, &previousField, DIFFUSION_CONSTANT, timeStep);
+        std::cout << "upate interior" << std::endl;
+        update_interior_temperature(&currentField, &previousField, DIFFUSION_CONSTANT, timeStep);
+        std::cout << "start halo" << std::endl;
+        start_halo_exchange(&currentField, &parallelInfo);
+        std::cout << "end halo" << std::endl;
+        complete_halo_exchange(&parallelInfo);
 
         // Output field at specified intervals
         if (iteration % IMAGE_OUTPUT_INTERVAL == 0) {
