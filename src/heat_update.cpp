@@ -59,6 +59,7 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
 
 void complete_halo_exchange(ParallelData *parallel)
 {
+    
     // Wait for the completion of non-blocking communication requests related to halo exchange
     MPI_Waitall(8, parallel->requests, MPI_NULL);
 }
@@ -94,16 +95,16 @@ void update_interior_temperature(Field *curr, Field *prev, double a, double dt)
         for (j = 1; j < curr->ny + 1; j++)
         {
             ic = idx(i, j, width);
-            iu = idx(i + 1, j, width);
-            id = idx(i - 1, j, width);
-            ir = idx(i, j + 1, width);
-            il = idx(i, j - 1, width);
+            iu = idx(i, j - 1, width);
+            id = idx(i, j + 1, width);
+            ir = idx(i + 1, j, width);
+            il = idx(i - 1, j, width);
 
             // Update the temperature using the five-point stencil
 
             curr->data[ic] = prev->data[ic] 
-            + (x_const * (prev->data[iu] - (2 * prev->data[ic]) + prev->data[id])) 
-            + (y_const * (prev->data[ir] - (2 * prev->data[ic]) + prev->data[il]));
+            + (x_const * (prev->data[ir] - (2 * prev->data[ic]) + prev->data[il])) 
+            + (y_const * (prev->data[iu] - (2 * prev->data[ic]) + prev->data[id]));
         }
     }
 }
@@ -142,16 +143,16 @@ void update_boundary_temperature(Field *curr, Field *prev, double a, double dt)
     for (j = 1; j < curr->ny + 1; j++)
     {
         ic = idx(i, j, width);
-        iu = idx(i + 1, j, width);
-        id = idx(i - 1, j, width);
-        ir = idx(i, j + 1, width);
-        il = idx(i, j - 1, width);
+        iu = idx(i, j - 1, width);
+        id = idx(i, j + 1, width);
+        ir = idx(i + 1, j, width);
+        il = idx(i - 1, j, width);
 
         // Apply the five-point stencil to update the temperature at the left borders.
 
         curr->data[ic] = prev->data[ic] 
-        + (x_const * (prev->data[iu] - (2 * prev->data[ic]) + prev->data[id])) 
-        + (y_const * (prev->data[ir] - (2 * prev->data[ic]) + prev->data[il]));
+        + (x_const * (prev->data[ir] - (2 * prev->data[ic]) + prev->data[il])) 
+        + (y_const * (prev->data[iu] - (2 * prev->data[ic]) + prev->data[id]));
     }
 
     // Update the right border
@@ -159,16 +160,16 @@ void update_boundary_temperature(Field *curr, Field *prev, double a, double dt)
     for (j = 1; j < curr->ny + 1; j++)
     {
         ic = idx(i, j, width);
-        iu = idx(i + 1, j, width);
-        id = idx(i - 1, j, width);
-        ir = idx(i, j + 1, width);
-        il = idx(i, j - 1, width);
+        iu = idx(i, j - 1, width);
+        id = idx(i, j + 1, width);
+        ir = idx(i + 1, j, width);
+        il = idx(i - 1, j, width);
 
         // Apply the five-point stencil to update the temperature at the right borders.
 
         curr->data[ic] = prev->data[ic] 
-        + (x_const * (prev->data[iu] - (2 * prev->data[ic]) + prev->data[id])) 
-        + (y_const * (prev->data[ir] - (2 * prev->data[ic]) + prev->data[il]));
+        + (x_const * (prev->data[ir] - (2 * prev->data[ic]) + prev->data[il])) 
+        + (y_const * (prev->data[iu] - (2 * prev->data[ic]) + prev->data[id]));
     }
 
     // Update the upper border
@@ -176,16 +177,16 @@ void update_boundary_temperature(Field *curr, Field *prev, double a, double dt)
     for (i = 1; i < curr->nx + 1; i++)
     {
         ic = idx(i, j, width);
-        iu = idx(i + 1, j, width);
-        id = idx(i - 1, j, width);
-        ir = idx(i, j + 1, width);
-        il = idx(i, j - 1, width);
+        iu = idx(i, j - 1, width);
+        id = idx(i, j + 1, width);
+        ir = idx(i + 1, j, width);
+        il = idx(i - 1, j, width);
 
         // Apply the five-point stencil to update the temperature at the upper boundary.
 
         curr->data[ic] = prev->data[ic] 
-        + (x_const * (prev->data[iu] - (2 * prev->data[ic]) + prev->data[id])) 
-        + (y_const * (prev->data[ir] - (2 * prev->data[ic]) + prev->data[il]));
+        + (x_const * (prev->data[ir] - (2 * prev->data[ic]) + prev->data[il])) 
+        + (y_const * (prev->data[iu] - (2 * prev->data[ic]) + prev->data[id]));
     }
 
     // Update the lower border
@@ -193,15 +194,15 @@ void update_boundary_temperature(Field *curr, Field *prev, double a, double dt)
     for (i = 1; i < curr->nx + 1; i++)
     {
         ic = idx(i, j, width);
-        iu = idx(i + 1, j, width);
-        id = idx(i - 1, j, width);
-        ir = idx(i, j + 1, width);
-        il = idx(i, j - 1, width);
+        iu = idx(i, j - 1, width);
+        id = idx(i, j + 1, width);
+        ir = idx(i + 1, j, width);
+        il = idx(i - 1, j, width);
 
         // Apply the five-point stencil to update the temperature at the lower borders.
 
         curr->data[ic] = prev->data[ic] 
-        + (x_const * (prev->data[iu] - (2 * prev->data[ic]) + prev->data[id])) 
-        + (y_const * (prev->data[ir] - (2 * prev->data[ic]) + prev->data[il]));
+        + (x_const * (prev->data[ir] - (2 * prev->data[ic]) + prev->data[il])) 
+        + (y_const * (prev->data[iu] - (2 * prev->data[ic]) + prev->data[id]));
     }
 }
