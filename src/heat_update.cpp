@@ -1,4 +1,5 @@
 #include <mpi.h>
+#include "constants.h"
 #include "heat.h"
 
 // Include header files if necessary
@@ -26,7 +27,7 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
     // Communication 1: Send data to the upper neighbor and receive from the lower neighbor
     MPI_Isend(send_buffer_up, temperature->nx, MPI_DOUBLE, parallel->nup, ROW_TAG_UP, parallel->comm, &(parallel->requests[0]));
     // This exchanges the ghost cells in the top row of the local temperature field
-    MPI_Irecv(recv_buffer_down, temperature->nx, MPI_DOUBLE, parallel->ndown, ROW_TAG_UP,parallel->comm, MPI_NULL, &(parallel->requests[1]));
+    MPI_Irecv(recv_buffer_down, temperature->nx, MPI_DOUBLE, parallel->ndown, ROW_TAG_UP,parallel->comm, &(parallel->requests[1]));
     
     // (down <-> up)
     j = temperature->ny;
@@ -55,8 +56,10 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
 
 void complete_halo_exchange(ParallelData *parallel)
 {
+    MPI_Status recv_status[parallel->size - 1];
+
     // Wait for the completion of non-blocking communication requests related to halo exchange
-    MPI_Waitall(8, parallel->requests, MPI_NULL);
+    MPI_Waitall(8, parallel->requests, recv_status);
 }
 
 /**
