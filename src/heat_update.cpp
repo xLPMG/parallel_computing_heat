@@ -62,7 +62,7 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
     }
     // Communication 4: Send data to the right neighbor and receive from the left neighbor
     MPI_Isend(send_buffer_right, temperature->ny, MPI_DOUBLE, parallel->nright, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[6]));
-    MPI_Irecv(recv_buffer_left, temperature->ny, MPI_DOUBLE, parallel->nleft, COLUMN_TAG_ROGHT, parallel->comm, &(parallel->requests[7]));
+    MPI_Irecv(recv_buffer_left, temperature->ny, MPI_DOUBLE, parallel->nleft, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[7]));
 }
 
 /**
