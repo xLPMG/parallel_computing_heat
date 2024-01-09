@@ -59,6 +59,7 @@ int main(int argc, char **argv)
     for (iteration = initialIteration; iteration < initialIteration + numTimeSteps; iteration++) {
         // ToDo
         // Use your implemented functions in a correct order here.
+        
 
         // Output field at specified intervals
         if (iteration % IMAGE_OUTPUT_INTERVAL == 0) {
