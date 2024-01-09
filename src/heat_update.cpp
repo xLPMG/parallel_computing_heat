@@ -27,9 +27,10 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
     }
     // Communication 1: Send data to the upper neighbor and receive from the lower neighbor
     MPI_Isend(send_buffer_up, temperature->nx, MPI_DOUBLE, parallel->nup, ROW_TAG_UP, parallel->comm, &(parallel->requests[0]));
+    MPI_Irecv(recv_buffer_down, temperature->nx, MPI_DOUBLE, parallel->ndown, ROW_TAG_DOWN, parallel->comm, &(parallel->requests[1]));
+
     // This exchanges the ghost cells in the top row of the local temperature field
-    MPI_Irecv(recv_buffer_down, temperature->nx, MPI_DOUBLE, parallel->ndown, ROW_TAG_UP,parallel->comm, &(parallel->requests[1]));
-    
+
     // (down <-> up)
     j = temperature->ny;
     for (i = 1; i <= temperature->nx; i++)
@@ -37,6 +38,8 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
         send_buffer_down[j - 1] = temperature->data[idx(i, j, width)];
     }
     // Communication 2: Send data to the lower neighbor and receive from the upper neighbor
+    MPI_Isend(send_buffer_down, temperature->nx, MPI_DOUBLE, parallel->ndown, ROW_TAG_DOWN, parallel->comm, &(parallel->requests[2]));
+    MPI_Irecv(recv_buffer_up, temperature->nx, MPI_DOUBLE, parallel->nup, ROW_TAG_UP, parallel->comm, &(parallel->requests[3]));
     // This exchanges the ghost cells in the bottom row of the local temperature field
 
     // (left <-> right)
@@ -46,6 +49,8 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
         send_buffer_left[j - 1] = temperature->data[idx(i, j, width)];
     }
     // Communication 3: Send data to the left neighbor and receive from the right neighbor
+    MPI_Isend(send_buffer_left, temperature->ny, MPI_DOUBLE, parallel->nleft, COLUMN_TAG_LEFT, parallel->comm, &(parallel->requests[4]));
+    MPI_Irecv(recv_buffer_right, temperature->ny, MPI_DOUBLE, parallel->nup, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[5]));
     // This exchanges the ghost cells in the leftmost column of the local temperature field
 
     // (right <-> left)
@@ -55,6 +60,8 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
         send_buffer_right[j - 1] = temperature->data[idx(i, j, width)];
     }
     // Communication 4: Send data to the right neighbor and receive from the left neighbor
+     MPI_Isend(send_buffer_right, temperature->ny, MPI_DOUBLE, parallel->nright, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[6]));
+    MPI_Irecv(recv_buffer_left, temperature->ny, MPI_DOUBLE, parallel->nleft, COLUMN_TAG_LEFT, parallel->comm, &(parallel->requests[7]));
     // This exchanges the ghost cells in the rightmost column of the local temperature field
 }
 
