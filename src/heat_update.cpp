@@ -14,55 +14,29 @@
  */
 void start_halo_exchange(Field *temperature, ParallelData *parallel)
 {
-    // Buffer Arrays
-    double send_buffer_up[temperature->nx], send_buffer_down[temperature->nx], send_buffer_left[temperature->ny], send_buffer_right[temperature->ny];
-    double recv_buffer_up[temperature->nx], recv_buffer_down[temperature->nx], recv_buffer_left[temperature->ny], recv_buffer_right[temperature->ny];
-
-    // Zaehlvariablen, um ueber die Daten zu laufen
-    int i, j;
 
     // Width for accessing and navigating through the temperature field
     int width = temperature->ny + 2;
 
     // (up <-> down)
-    j = 1;
-    for (i = 1; i <= temperature->nx; i++)
-    {
-        send_buffer_up[i - 1] = temperature->data[idx(i, j, width)];
-    }
     // Communication 1: Send data to the upper neighbor and receive from the lower neighbor
-    MPI_Isend(send_buffer_up, temperature->nx, MPI_DOUBLE, parallel->nup, ROW_TAG_UP, parallel->comm, &(parallel->requests[0]));
-    MPI_Irecv(recv_buffer_down, temperature->nx, MPI_DOUBLE, parallel->ndown, ROW_TAG_UP, parallel->comm, &(parallel->requests[1]));
+    MPI_Isend(temperature->data[idx(0, 1, width)], 1, parallel->rowtype, parallel->nup, ROW_TAG_UP, parallel->comm, &(parallel->requests[0]));
+    MPI_Irecv(temperature->data[idx(0, temperature->nx + 1, width)], 1, parallel->rowtype, parallel->ndown, ROW_TAG_UP, parallel->comm, &(parallel->requests[1]));
     
     // (down <-> up)
-    j = temperature->ny;
-    for (i = 1; i <= temperature->nx; i++)
-    {
-        send_buffer_down[i - 1] = temperature->data[idx(i, j, width)];
-    }
     // Communication 2: Send data to the lower neighbor and receive from the upper neighbor
-    MPI_Isend(send_buffer_down, temperature->nx, MPI_DOUBLE, parallel->ndown, ROW_TAG_DOWN, parallel->comm, &(parallel->requests[2]));
-    MPI_Irecv(recv_buffer_up, temperature->nx, MPI_DOUBLE, parallel->nup, ROW_TAG_DOWN, parallel->comm, &(parallel->requests[3]));
+    MPI_Isend(temperature->data[idx(0, temperature->nx, width)], 1, parallel->rowtype, parallel->ndown, ROW_TAG_DOWN, parallel->comm, &(parallel->requests[2]));
+    MPI_Irecv(temperature->data[idx(0, 0, width)], 1, parallel->rowtype, parallel->nup, ROW_TAG_DOWN, parallel->comm, &(parallel->requests[3]));
 
     // (left <-> right)
-    i = 1;
-    for (j = 1; j <= temperature->nx; j++)
-    {
-        send_buffer_left[j - 1] = temperature->data[idx(i, j, width)];
-    }
     // Communication 3: Send data to the left neighbor and receive from the right neighbor
-    MPI_Isend(send_buffer_left, temperature->ny, MPI_DOUBLE, parallel->nleft, COLUMN_TAG_LEFT, parallel->comm, &(parallel->requests[4]));
-    MPI_Irecv(recv_buffer_right, temperature->ny, MPI_DOUBLE, parallel->nright, COLUMN_TAG_LEFT, parallel->comm, &(parallel->requests[5]));
+    MPI_Isend(temperature->data[idx(1, 0, width)], 1, parallel->columntype, parallel->nleft, COLUMN_TAG_LEFT, parallel->comm, &(parallel->requests[4]));
+    MPI_Irecv(temperature->data[idx(temperature->ny + 1, 0, width)], 1, parallel->columntype, parallel->nright, COLUMN_TAG_LEFT, parallel->comm, &(parallel->requests[5]));
 
     // (right <-> left)
-    i = temperature->ny;
-    for (j = 1; j <= temperature->nx; j++)
-    {
-        send_buffer_right[j - 1] = temperature->data[idx(i, j, width)];
-    }
     // Communication 4: Send data to the right neighbor and receive from the left neighbor
-    MPI_Isend(send_buffer_right, temperature->ny, MPI_DOUBLE, parallel->nright, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[6]));
-    MPI_Irecv(recv_buffer_left, temperature->ny, MPI_DOUBLE, parallel->nleft, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[7]));
+    MPI_Isend(temperature->data[idx(temperature->ny, 0, width)], 1, parallel->columntype, parallel->nright, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[6]));
+    MPI_Irecv(temperature->data[idx(0, 0, width)], 1, parallel->columntype, parallel->nleft, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[7]));
 }
 
 /**
@@ -92,6 +66,7 @@ void complete_halo_exchange(ParallelData *parallel)
  */
 void update_interior_temperature(Field *curr, Field *prev, double a, double dt)
 {
+    //Updated alles außer die äußerste Reihe von Werten
     int i, j;
     int ic, iu, id, il, ir; // Indices for center, up, down, left, right
     int width;
@@ -106,9 +81,9 @@ void update_interior_temperature(Field *curr, Field *prev, double a, double dt)
     x_const = (a * dt / (dx2));
     y_const = (a * dt / (dy2));
     // Loop over the interior grid points for the update
-    for (i = 1; i < curr->nx + 1; i++)
+    for (i = 2; i < curr->nx; i++)
     {
-        for (j = 1; j < curr->ny + 1; j++)
+        for (j = 2; j < curr->ny; j++)
         {
             ic = idx(i, j, width);
             iu = idx(i, j - 1, width);
@@ -137,6 +112,7 @@ void update_interior_temperature(Field *curr, Field *prev, double a, double dt)
  */
 void update_boundary_temperature(Field *curr, Field *prev, double a, double dt)
 {
+    //Updated nur die äußerste Reihe von Werten
     int i, j;
     int ic, iu, id, il, ir; // Indices for center, up, down, left, right
     int width;
