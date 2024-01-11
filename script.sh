@@ -12,6 +12,7 @@ module purge
 module load compiler/gcc/11.2.0
 module load mpi/openmpi/4.1.2-gcc-10.2.0
 
+mkdir build
 # Compile the MPI program
 mpic++ -O3 -Wall -c src/main.cpp -o build/main.o
 mpic++ -O3 -Wall -c src/pngsaver.cpp -o build/pngsaver.o 
@@ -31,7 +32,7 @@ mpic++ -O3 -Wall -o build/heat_mpi build/main.o build/pngsaver.o build/heat_init
 # Run the MPI program using mpirun
 # -np 8: Number of MPI tasks
 # --oversubscribe: Allow more processes than available cores
-mpirun --oversubscribe -n 4 build/heat_mpi
+mpirun --oversubscribe -n 16 build/heat_mpi
 
 # Clean up object files after the run
 rm -f build/*.o
