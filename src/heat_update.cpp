@@ -20,23 +20,23 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
 
     // (up <-> down)
     // Communication 1: Send data to the upper neighbor and receive from the lower neighbor
-    MPI_Isend(temperature->data[idx(0, 1, width)], 1, parallel->rowtype, parallel->nup, ROW_TAG_UP, parallel->comm, &(parallel->requests[0]));
-    MPI_Irecv(temperature->data[idx(0, temperature->nx + 1, width)], 1, parallel->rowtype, parallel->ndown, ROW_TAG_UP, parallel->comm, &(parallel->requests[1]));
+    MPI_Isend(&temperature->data[idx(1, 1, width)], 1, parallel->rowtype, parallel->nup, ROW_TAG_UP, parallel->comm, &(parallel->requests[0]));
+    MPI_Irecv(&temperature->data[idx(temperature->nx + 1, 1, width)], 1, parallel->rowtype, parallel->ndown, ROW_TAG_UP, parallel->comm, &(parallel->requests[1]));
     
     // (down <-> up)
     // Communication 2: Send data to the lower neighbor and receive from the upper neighbor
-    MPI_Isend(temperature->data[idx(0, temperature->nx, width)], 1, parallel->rowtype, parallel->ndown, ROW_TAG_DOWN, parallel->comm, &(parallel->requests[2]));
-    MPI_Irecv(temperature->data[idx(0, 0, width)], 1, parallel->rowtype, parallel->nup, ROW_TAG_DOWN, parallel->comm, &(parallel->requests[3]));
+    MPI_Isend(&temperature->data[idx(temperature->nx, 1, width)], 1, parallel->rowtype, parallel->ndown, ROW_TAG_DOWN, parallel->comm, &(parallel->requests[2]));
+    MPI_Irecv(&temperature->data[idx(0, 1, width)], 1, parallel->rowtype, parallel->nup, ROW_TAG_DOWN, parallel->comm, &(parallel->requests[3]));
 
     // (left <-> right)
     // Communication 3: Send data to the left neighbor and receive from the right neighbor
-    MPI_Isend(temperature->data[idx(1, 0, width)], 1, parallel->columntype, parallel->nleft, COLUMN_TAG_LEFT, parallel->comm, &(parallel->requests[4]));
-    MPI_Irecv(temperature->data[idx(temperature->ny + 1, 0, width)], 1, parallel->columntype, parallel->nright, COLUMN_TAG_LEFT, parallel->comm, &(parallel->requests[5]));
+    MPI_Isend(&temperature->data[idx(0, 1, width)], 1, parallel->columntype, parallel->nleft, COLUMN_TAG_LEFT, parallel->comm, &(parallel->requests[4]));
+    MPI_Irecv(&temperature->data[idx(0, temperature->ny + 1, width)], 1, parallel->columntype, parallel->nright, COLUMN_TAG_LEFT, parallel->comm, &(parallel->requests[5]));
 
     // (right <-> left)
     // Communication 4: Send data to the right neighbor and receive from the left neighbor
-    MPI_Isend(temperature->data[idx(temperature->ny, 0, width)], 1, parallel->columntype, parallel->nright, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[6]));
-    MPI_Irecv(temperature->data[idx(0, 0, width)], 1, parallel->columntype, parallel->nleft, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[7]));
+    MPI_Isend(&temperature->data[idx(0, temperature->ny, width)], 1, parallel->columntype, parallel->nright, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[6]));
+    MPI_Irecv(&temperature->data[idx(0, 0, width)], 1, parallel->columntype, parallel->nleft, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[7]));
 }
 
 /**
