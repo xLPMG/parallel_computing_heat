@@ -4,14 +4,6 @@
 #include "constants.h"
 // Include header files if necessary
 
-/**
- * @brief Starts the halo exchange.
- *
- * This function should initiate the halo exchange to communicate boundary data between neighboring processes.
- *
- * @param temperature Pointer to the temperature field structure.
- * @param parallel Pointer to the parallel data.
- */
 void start_halo_exchange(Field *temperature, ParallelData *parallel)
 {
 
@@ -39,13 +31,6 @@ void start_halo_exchange(Field *temperature, ParallelData *parallel)
     MPI_Irecv(&temperature->data[idx(0, 0, width)], 1, parallel->columntype, parallel->nleft, COLUMN_TAG_RIGHT, parallel->comm, &(parallel->requests[7]));
 }
 
-/**
- * @brief Waits for the completion of the halo exchange.
- *
- * This function is used to wait for the completion of all requests of the halo exchange.
- *
- * @param parallel Pointer to the parallel data.
- */
 void complete_halo_exchange(ParallelData *parallel)
 {
     MPI_Status recv_status[8];
@@ -54,16 +39,6 @@ void complete_halo_exchange(ParallelData *parallel)
     MPI_Waitall(8, parallel->requests, recv_status);
 }
 
-/**
- * @brief Updates the interior temperature field.
- *
- * This function should update the interior temperature field based on the five-point stencil.
- *
- * @param curr Pointer to the current field structure.
- * @param prev Pointer to the previous field structure.
- * @param a Thermal diffusivity.
- * @param dt Time step size.
- */
 void update_interior_temperature(Field *curr, Field *prev, double a, double dt)
 {
     //Updated alles außer die äußerste Reihe von Werten
@@ -100,16 +75,6 @@ void update_interior_temperature(Field *curr, Field *prev, double a, double dt)
     }
 }
 
-/**
- * @brief Update the borders of the temperature field.
- *
- * This function should update the border temperature field based on the five-point stencil.
- *
- * @param curr Pointer to the current field structure.
- * @param prev Pointer to the previous field structure.
- * @param a Thermal diffusivity.
- * @param dt Time step size.
- */
 void update_boundary_temperature(Field *curr, Field *prev, double a, double dt)
 {
     //Updated nur die äußerste Reihe von Werten
