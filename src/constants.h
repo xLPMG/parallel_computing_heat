@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 // Constants for grid dimensions
-const int NSTEPS = 1000;        // Number of simulation steps
+const int NSTEPS = 10000;        // Number of simulation steps
 const int ITERATIONS = 0;        // Number of iterations
 const double DX = 0.01;          // Grid spacing in the x-direction
 const double DY = 0.01;          // Grid spacing in the y-direction
@@ -11,8 +11,8 @@ const double DY = 0.01;          // Grid spacing in the y-direction
 const double DIFFUSION_CONSTANT = 0.5;  // Diffusion constant determines the rate of heat transfer in the material
 
 // Constants for image extraction
-const int IMAGE_OUTPUT_INTERVAL = 100;   // Image output interval determines how often the simulation results are saved as images
-const int RESTART_OUTPUT_INTERVAL = 200; // Restart output interval defines the frequency of creating restart checkpoints for the simulation
+const int IMAGE_OUTPUT_INTERVAL = 1000;   // Image output interval determines how often the simulation results are saved as images
+const int RESTART_OUTPUT_INTERVAL = 2000; // Restart output interval defines the frequency of creating restart checkpoints for the simulation
 
 // MPI tags for communication
 const int TAG_WRITE = 22;   // Tag for MPI communication during writing

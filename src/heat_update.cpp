@@ -56,9 +56,9 @@ void update_interior_temperature(Field *curr, Field *prev, double a, double dt)
     x_const = (a * dt / (dx2));
     y_const = (a * dt / (dy2));
     // Loop over the interior grid points for the update
-    for (i = 2; i < curr->nx; i++)
+    for (i = 1; i < curr->nx+1; i++)
     {
-        for (j = 2; j < curr->ny; j++)
+        for (j = 1; j < curr->ny+1; j++)
         {
             ic = idx(i, j, width);
             iu = idx(i, j - 1, width);
